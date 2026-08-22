@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bag - Myntra clone</title>
+  <link rel="stylesheet" href="Myntram.css">
+  <link rel="stylesheet" href="bag.css">
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:12px;padding-left:16px;">
+      <a href="Myntram.html"><image class="myntra_logo" src="https://tse1.mm.bing.net/th/id/OIP.FoekGC-ndT3oh3mUVl5E3QHaEK?cb=defcachec2&rs=1&pid=ImgDetMain&o=7&rm=3" alt="myntra_home" height=36; width=53;></image></a>
+      <a style="text-decoration:none;color:inherit;font-weight:700;">← Continue shopping</a>
+      <h2 style="margin-left:8px;">My Bag</h2>
+    </div>
+  </header>
+
+  <main style="padding:20px;">
+    <div class="bag-layout">
+      <section class="bag-items" id="bagItems">
+        <!-- items injected here -->
+      </section>
+      <aside class="bag-summary" id="bagSummary">
+        <h3>Price Details</h3>
+        <div class="summary-row"><span>Subtotal</span><span id="subtotal">₹0</span></div>
+        <div class="summary-row"><span>Delivery</span><span id="delivery">₹0</span></div>
+        <div class="summary-row total"><strong>Total</strong><strong id="total">₹0</strong></div>
+        <button id="checkoutBtn" class="btn-add-bag">Proceed to Checkout</button>
+      </aside>
+    </div>
+    <!-- Recommended products for bag page (different from main product grid) -->
+    <div class="recommended-section">
+      <h3>Recommended for you</h3>
+      <div id="recommended" class="recommended-list"></div>
+    </div>
+  </main>
+
+  <script src="items.js"></script>
+  <script src="index.js"></script>
+  <script>
+    (function(){
+      const {getCart, saveCart, updateBagCount} = window.__myntraCart || {};
+      const DELIVERY_FREE_OVER = 1999;
+      function format(n){ return '₹'+n; }
+
+      function renderCart(){
+        const cart = getCart();
+        const container = document.getElementById('bagItems');
+        container.innerHTML = '';
+        const ids = Object.keys(cart);
+        if (!ids.length){ container.innerHTML = '<p>Your bag is empty.</p>'; updateSummary(); return; }
+
+        ids.forEach(id=>{
+          const it = cart[id];
+          const el = document.createElement('div');
+          el.className = 'bag-item';
+          el.innerHTML = `
+            <img src="${it.img}" alt="${it.name}" />
+            <div class="bag-item-meta">
+              <div class="company">${it.company}</div>
+              <div class="name">${it.name}</div>
+              <div class="price">₹${it.price} <span class="original">₹${it.original}</span></div>
+              <div class="qty-controls">
+                <button class="dec" data-id="${id}">-</button>
+                <span class="qty">${it.qty}</span>
+                <button class="inc" data-id="${id}">+</button>
+                <button class="remove" data-id="${id}">Remove</button>
+              </div>
+            </div>
+          `;
+          container.appendChild(el);
+        });
+
+        // attach controls
+        container.querySelectorAll('.inc').forEach(b=> b.addEventListener('click', e=>{
+          const id = e.currentTarget.dataset.id; cart[id].qty++; saveCart(cart); renderCart(); updateBagCount();
+        }));
+        container.querySelectorAll('.dec').forEach(b=> b.addEventListener('click', e=>{
+          const id = e.currentTarget.dataset.id; if (cart[id].qty>1) cart[id].qty--; else delete cart[id]; saveCart(cart); renderCart(); updateBagCount();
+        }));
+        container.querySelectorAll('.remove').forEach(b=> b.addEventListener('click', e=>{
+          const id = e.currentTarget.dataset.id; delete cart[id]; saveCart(cart); renderCart(); updateBagCount();
+        }));
+
+        updateSummary();
+      }
+
+        function renderRecommended(){
+          const dest = document.getElementById('recommended');
+          dest.innerHTML = '';
+          const cart = (window.__myntraCart && window.__myntraCart.getCart && window.__myntraCart.getCart()) || {};
+          const inCartIds = new Set(Object.keys(cart));
+          const items = (window.recommendedItems || []).filter(i=>!inCartIds.has(i.id)).slice(0,6);
+          if (!items.length){ dest.innerHTML = '<p>No recommendations right now.</p>'; return; }
+          items.forEach(it=>{
+            const el = document.createElement('div'); el.className = 'rec-item';
+            el.innerHTML = `
+              <img src="${it.img}" alt="${it.name}" />
+              <div class="rec-meta">
+                <div class="rec-name">${it.name}</div>
+                <div class="rec-price">₹${it.price}</div>
+                <button class="btn-add-bag" data-id="${it.id}">ADD</button>
+              </div>
+            `;
+            dest.appendChild(el);
+          });
+
+          dest.querySelectorAll('.btn-add-bag').forEach(b=> b.addEventListener('click', e=>{
+            const id = e.currentTarget.dataset.id;
+            // use global addToCart if available
+            if (window.__myntraCart && window.__myntraCart.getCart){
+              // simple add: read current cart, increment and save
+              const cart = window.__myntraCart.getCart();
+              // search in both itemsData and recommendedItems
+              const allItems = [].concat(window.itemsData || [], window.recommendedItems || []);
+              const item = allItems.find(p=>p.id===id);
+              if (!cart[id]) cart[id] = {...item, qty:0};
+              cart[id].qty = (cart[id].qty||0)+1;
+              window.__myntraCart.saveCart(cart);
+              window.__myntraCart.updateBagCount();
+              renderCart();
+              renderRecommended();
+            }
+          }));
+        }
+
+      function updateSummary(){
+        const cart = getCart();
+        const items = Object.values(cart);
+        const subtotal = items.reduce((s,i)=> s + (i.price * (i.qty||0)), 0);
+        const delivery = subtotal === 0 ? 0 : (subtotal >= DELIVERY_FREE_OVER ? 0 : 99);
+        const total = subtotal + delivery;
+        document.getElementById('subtotal').textContent = format(subtotal);
+        document.getElementById('delivery').textContent = format(delivery);
+        document.getElementById('total').textContent = format(total);
+      }
+
+      document.getElementById('checkoutBtn').addEventListener('click', ()=>{
+        location.href = 'checkout.html';
+      });
+
+      renderCart();
+      updateBagCount();
+      renderRecommended();
+    })();
+  </script>
+</body>
+</html>

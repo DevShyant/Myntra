@@ -1,0 +1,9 @@
+/* checkout.css — minimal, consistent styles for checkout page */
+.checkout-layout{display:flex;gap:24px;align-items:flex-start}
+.checkout-form{flex:1;background:#fff;padding:18px;border-radius:6px;border:1px solid #eaeaec}
+.order-summary{width:360px;background:#fff;padding:18px;border-radius:6px;border:1px solid #eaeaec}
+.checkout-form label{display:block;margin-bottom:12px}
+.checkout-form input,.checkout-form textarea{width:100%;padding:8px;border:1px solid #eaeaec;border-radius:4px}
+.checkout-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f6}
+.summary-row.total{margin-top:12px;display:flex;justify-content:space-between;font-weight:700}
+.btn-add-bag{background:#ff3f6c;color:#fff;border:none;padding:12px;border-radius:6px;margin-top:12px;cursor:pointer}

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Checkout - Myntra clone</title>
+  <link rel="stylesheet" href="Myntram.css">
+  <link rel="stylesheet" href="checkout.css">
+</head>
+<body>
+  <header style="padding-left:16px;">
+    <a href="bag.html" style="text-decoration:none;color:inherit;font-weight:700">← Back to Bag</a>
+  </header>
+  <main style="padding:20px;">
+    <div class="checkout-layout">
+      <section class="checkout-form">
+        <h2>Shipping details</h2>
+        <form id="checkoutForm">
+          <label>Full name<br><input type="text" id="name" required></label>
+          <label>Address<br><textarea id="address" rows="3" required></textarea></label>
+          <label>City / State / PIN<br><input id="city" required></input></label>
+          <label>Phone<br><input id="phone" required></input></label>
+        </form>
+      </section>
+      <aside class="order-summary" id="orderSummary">
+        <h3>Order Summary</h3>
+        <div id="itemsList"></div>
+        <div class="summary-row total"><strong>Payable</strong><strong id="payable">₹0</strong></div>
+        <button id="placeOrder" class="btn-add-bag">Place Order</button>
+      </aside>
+    </div>
+  </main>
+
+  <script src="items.js"></script>
+  <script>
+    (function(){
+      const CART_KEY = 'myntra_cart_v1';
+      function getCart(){try{return JSON.parse(localStorage.getItem(CART_KEY))||{}}catch(e){return {}}}
+      function format(n){return '₹'+n}
+      function render(){
+        const cart = getCart(); const items = Object.values(cart);
+        const list = document.getElementById('itemsList'); list.innerHTML='';
+        const subtotal = items.reduce((s,i)=> s + (i.price*(i.qty||0)), 0);
+        items.forEach(it=>{
+          const el = document.createElement('div'); el.className='checkout-item';
+          el.innerHTML = `<div>${it.name} × ${it.qty}</div><div>₹${it.price*it.qty}</div>`;
+          list.appendChild(el);
+        });
+        const delivery = subtotal===0?0:(subtotal>=1999?0:99);
+        const total = subtotal + delivery;
+        document.getElementById('payable').textContent = format(total);
+      }
+
+      document.getElementById('placeOrder').addEventListener('click', ()=>{
+        // simple validation
+        const name = document.getElementById('name').value.trim();
+        const address = document.getElementById('address').value.trim();
+        if(!name||!address){ alert('Please fill required fields'); return; }
+        // clear cart and show confirmation
+        localStorage.removeItem(CART_KEY);
+        alert('Order placed — thank you!');
+        location.href = 'Myntram.html';
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

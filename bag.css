@@ -1,0 +1,27 @@
+/* bag.css — styles for bag page, keeps visual language consistent with Myntram.css */
+.bag-layout{display:flex;gap:24px;align-items:flex-start;}
+.bag-items{flex:1;background:#fff;padding:18px;border-radius:6px;border:1px solid #eaeaec;}
+.bag-summary{width:320px;background:#fff;padding:18px;border-radius:6px;border:1px solid #eaeaec;height:fit-content}
+.bag-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0}
+.bag-item img{width:120px;height:120px;object-fit:cover;border-radius:4px}
+.bag-item-meta{flex:1}
+.bag-item-meta .company{font-weight:700;margin-bottom:6px}
+.bag-item-meta .name{color:#535766;margin-bottom:8px}
+.bag-item-meta .price{font-weight:700;margin-bottom:8px}
+.bag-item-meta .original{text-decoration:line-through;color:#7e818c;font-weight:400;margin-left:8px}
+.qty-controls{display:flex;gap:8px;align-items:center}
+.qty-controls button{padding:6px 10px;border:1px solid #eaeaec;background:#fff;cursor:pointer;border-radius:4px}
+.qty-controls .remove{margin-left:12px;color:#d23f3f;border:0;background:transparent}
+.summary-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eee}
+.summary-row.total{border-top:1px solid #eaeaec;font-size:1.05em}
+.btn-add-bag{display:block;width:100%;background:#ff3f6c;color:#fff;border:none;padding:12px;border-radius:6px;margin-top:12px;font-weight:700}
+
+/* Recommended list styles */
+.recommended-section{width:80%;margin:24px auto}
+.recommended-list{display:flex;flex-wrap:wrap;gap:12px}
+.rec-item{width:150px;background:#fff;padding:8px;border:1px solid #ececec;border-radius:6px;display:flex;gap:8px;align-items:center}
+.rec-item img{width:64px;height:64px;object-fit:cover;border-radius:4px}
+.rec-meta{display:flex;flex-direction:column}
+.rec-name{font-size:13px;color:#333;font-weight:700}
+.rec-price{font-size:13px;color:#ff3f6c;margin-top:6px}
+.rec-item .btn-add-bag{width:auto;padding:6px 8px;margin-top:8px}
